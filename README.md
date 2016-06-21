@@ -16,7 +16,7 @@ Material Design
 
 ![Firebase](http://www.apptimo.com/sites/apptimo/wp-content/uploads/2016/05/material-design-stacked.png)
 
-Material Design
+Ionic
 
 ![Ionic](http://ionicframework.com/img/ionic_logo.svg)
 

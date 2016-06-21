@@ -1,21 +1,122 @@
-/*
-{id: 1, cant: 1, sku: "7501055300341", product: "Sprite lata 355ml", price: 10, image: "https://dworkins.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/s/p/sprite_355_1_1_1_1_2_1_1_1_1.jpg"},
-{id: 2, cant: 2, sku: "7501031323302", product: "7up lima-limon lata 355ml", price: 9.5, image: "https://www.lacomer.com.mx/superc/img_art/7501031323302_1.jpg"},
-{id: 3, cant: 1, sku: "7501086801015", product: "Epura 1.5L", price: 12.34, image: "http://farmaciasdrdi.com/wp-content/uploads/2016/03/AGUA-EPURA-1-5-LITROS.jpg"}
-*/
+// Orders
+
+var orders_body = [
+    {template: "Tiene los siguientes pedidos por realizar:"},
+    {template: "Lista de Pedidos"},
+];
+
+var __shop_orders = [];
+var __triggerOrder = false;
+
+function triggerOrder() {
+    if (!__triggerOrder) {
+        setTimeout(function () {
+            order_received();
+        },1000);
+        __triggerOrder = true;
+    }
+
+}
+
+function InitOrders() {
+    getOrdersByShop("Abarrotes San Juan (168m)", function(val){
+        __shop_orders.push(val);
+        triggerOrder();
+    });
+}
+
+function orderShowBadges() {
+    // Modify badges
+    $$("main_menu_button").define({
+        badge: __shop_orders.length
+    });
+    $$("main_menu_button").refresh();
+    $$("main_menu_list").updateItem(2, {
+        id: 2,
+        value: "Pedidos a Domicilio",
+        icon: "home",
+        count: __shop_orders.length
+    });
+}
+
+function order_received() {
+    orderShowBadges();
+    webix.modalbox({
+        title: "Pedido a domicilio recibido",
+        buttons:["Si", "No"],
+        text: "&iquest;Ir a ver los pedidos ahora?",
+        width: 400,
+        callback: function(result){
+            switch(result){
+            case 0: 
+                //statement
+                break;
+            case 1:
+                //statement
+                break;
+            }
+        }
+    });
+
+}
+
+// Inventory
+
+inventory_body = [
+    {
+        id: "inventory_table",
+        view:"datatable", 
+        columns:[
+            { id:"barcode", header:"Codigo de barras", width:150},
+            { id:"name", header:"Nombre del producto", width:400},
+            { id:"description", header:"Descripcion", width:400},
+        ],
+        on: {
+            onAfterRender: function () {
+                getProductsByShop("Abarrotes San Juan (168m)", function(val){
+                    $$("inventory_table").parse(val);
+                });
+            }
+        }
+    }
+];
+
+// Sells
 
 var __search_barcode = "";
 
 function search_barcode(barcode) {
+    var id, item, total;
+    for(id = $$("products_list").getFirstId();
+        id != null; id = $$("products_list").getNextId(id)) {
+        item = $$("products_list").getItem(id);
+        if(item.barcode == barcode) {
+            total = $$("sell_total").getValues();
+            item.quantity++;
+            total.quantity++;
+            total.total += item.price;
+            $$("products_list").remove(id);
+            $$("products_list").add(item);
+            $$("sell_total").setValues(total);
+            return;
+        }
+    }
     getProductByCodeAndShop(barcode, "Abarrotes San Juan (168m)", function(val){
-        webix.message(val);
-    })
+        var total;
+        total = $$("sell_total").getValues();
+        val.quantity = 1;
+        total.quantity++;
+        total.total += val.price;
+        $$("products_list").add(val);
+        $$("sell_total").setValues(total);
+    });
 }
 
 function keyPress_barcode(code, event) {
     if(code >= 48 && code <= 58) {
         __search_barcode += String.fromCharCode(code);
     } else if(__search_barcode.length > 0) {
+        $$("search_text").setValue("");
         search_barcode(__search_barcode);
         __search_barcode = "";
     }
@@ -53,42 +154,43 @@ ventas_body = [
         view: "list",
         template: function(data) {
             var tmp = "<table class=\"prod_list\"><tr>" +
-                "<td><img src=\"" + data.image + "\"></td>" +
-                "<td>" + data.product + "</td>" +
-                "<td>" + data.cant + " x $ " + aToPrice(data.price) + " = </td>" +
+                "<td><img src=\"" + data.photo + "\"></td>" +
+                "<td>" + data.description + "</td>" +
+                "<td>" + data.quantity + " x $ " + aToPrice(data.price) + " = </td>" +
                 "<td>$</td>" +
-                "<td>" + aToPrice(data.cant * data.price) + "</td>" +
+                "<td>" + aToPrice(data.quantity * data.price) + "</td>" +
                 "</tr></table>";
             return tmp;
         },
         select: true,
         data: [
-            
+
         ],
         type: {
             height: 60
         }, 
     },
     {
-        view: "form",
-        elements: [
-            {
-                cols: [
-                    {},
-                    {view: "label", label: "Total"}
-                ]
-            }
-        ]
+        id: "sell_total",
+        view: "template",
+        height: 80,
+        template: function (data) {
+            return "<table class=\"sell_total\"><tr>" +
+                "<td>" + data.quantity + " Productos</td>" +
+                "<td>Total:&nbsp;&nbsp;$</td>" +
+                "<td>" + aToPrice(data.total) + "</td>" +
+                "</tr></table>";
+        },
+        data: {quantity: 0, total: 0}
     }
 ];
-pedidos_body = [];
 
 // MAIN Layout
 
 main_smenu = {
     view: "sidemenu",
     id: "main_smenu",
-    width: 200,
+    width: 220,
     position: "left",
     state: function(state){
         var toolbarHeight = $$("main_header").$height;
@@ -97,10 +199,18 @@ main_smenu = {
     },
     css: "coba_menu",
     body:{
+        id: "main_menu_list",
         view: "list",
         borderless: true,
         scroll: false,
-        template: "<span class='webix_icon fa-#icon#'></span>&nbsp;&nbsp;#value#",
+        template: function(data) {
+            var ret =  "<span class='webix_icon fa-" +
+            data.icon + "'></span>&nbsp;&nbsp;" + data.value;
+            if(data.count > 0) {
+                ret += "<span class=\"webix_badge\">" + data.count + "</span>";
+            }
+            return ret;
+        },
         data: [
             {id: 1, value: "Venta", icon: "usd"},
             {id: 2, value: "Pedidos a Domicilio", icon: "home"},
@@ -118,16 +228,22 @@ main_smenu = {
                 var bodyContent = [];
                 switch (id) {
                     case "1":
-                        bodyContent = ventas_body;
-                        break;
+                    bodyContent = ventas_body;
+                    break;
                     case "2":
-                        bodyContent = pedidos_body;
-                        break;
+                    bodyContent = orders_body;
+                    break;
+                    case "3":
+                    bodyContent = inventory_body;
                 }
                 $$("main_body").define({
                     rows: bodyContent
                 });
                 $$("main_body").reconstruct();
+                $$("main_title").define({
+                    label: "<span class='title_nobadge'>" + trg.innerHTML + "</span>"
+                });
+                $$("main_title").refresh();
                 setTimeout(function () {
                     if( $$("main_smenu").config.hidden){
                         $$("main_smenu").show();
@@ -140,7 +256,7 @@ main_smenu = {
         }
     }
 };
-    
+
 main_body = {
     id: "main_body",
     view: "layout",
@@ -152,20 +268,24 @@ main_header = {
     id: "main_header",
     view: "toolbar",
     elements: [
-        {
-            view: "icon", icon: "bars",
-            click: function(){
-                if( $$("main_smenu").config.hidden){
-                    $$("main_smenu").show();
-                }
-                else {
-                    $$("main_smenu").hide();
-                }
+    {
+        id: "main_menu_button",
+        view: "icon",
+        icon: "bars",
+        click: function(){
+            if( $$("main_smenu").config.hidden){
+                $$("main_smenu").show();
             }
-        },
-        {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta"},
-        {},
-        {view: "button", type:"icon", icon: "user", maxWidth: 100, align: "right", label: "&nbsp;&nbsp;Mi Cuenta"}
+            else {
+                $$("main_smenu").hide();
+            }
+        }
+    },
+    {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta", width: 250},
+    {},
+    {view: "label", label: "LOCALITO"},
+    {},
+    {view: "button", type:"icon", icon: "user", maxWidth: 100, align: "right", label: "&nbsp;&nbsp;Mi Cuenta"}
     ]
 };
 
@@ -174,8 +294,8 @@ main_layout = {
     id: "main_layout",
     view: "layout",
     rows: [
-        main_header,
-        main_body
+    main_header,
+    main_body
     ]
 };
 
@@ -186,4 +306,6 @@ webix.ready(function(){
         rows: ventas_body
     });
     $$("main_body").reconstruct();
+
+    InitOrders();
 });

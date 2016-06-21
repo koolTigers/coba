@@ -74,6 +74,13 @@ function getProductByBarcode(barcode, callback) {
 	});
 }
 
+function getProductsByShop(shop, callback) {
+	ref = firebase.database().ref('products')
+	ref.orderByChild("shop").equalTo(shop).on("value", function(snapshot) {
+		callback(snapshot.val())
+	});
+}
+
 function getProductByCodeAndShop(barcode, shop, callback) {
 	ref = firebase.database().ref('products')
 	ref.orderByChild("barcode").equalTo(barcode).once("value", function(snapshot) {
@@ -83,5 +90,19 @@ function getProductByCodeAndShop(barcode, shop, callback) {
 				callback(product[pr])
 			}
 		}
+	});
+}
+
+function getOrdersByShop(shop, callback) {
+	ref = firebase.database().ref('orders')
+	ref.orderByKey().startAt(shop).on("child_added", function(snapshot) {
+		callback(snapshot.val())
+	});
+}
+
+function getOrdersByShop(shop, callback) {
+	ref = firebase.database().ref('orders')
+	ref.orderByChild('shop').startAt(shop).on("child_added", function(snapshot) {
+		callback(snapshot.val())
 	});
 }

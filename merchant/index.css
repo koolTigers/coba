@@ -1,0 +1,51 @@
+span.webix_icon {
+    text-align: center;
+}
+
+.coba_menu .webix_view{
+	background-color: #ECEFF1;
+}
+
+.coba_menu .webix_list_item{
+	line-height: 50px;
+	border-bottom-color: #ddd;
+}
+
+.prod_list img {
+    max-width: 50px;
+    max-height: 50px;
+}
+
+table.prod_list {
+    width: 100%;
+}
+
+table.prod_list td:nth-child(1) {
+    width: 60px;
+    text-align: center;
+}
+
+table.prod_list td:nth-child(2) {
+    font-size: 24px;
+    text-align: left;
+    font-weight: bold;
+}
+
+table.prod_list td:nth-child(3) {
+    font-size: 18px;
+    width: 150px;
+    text-align: right;
+}
+
+table.prod_list td:nth-child(4) {
+    width: 25px;
+    font-size: 24px;
+    text-align: right;
+}
+
+table.prod_list td:nth-child(5) {
+    width: 150px;
+    font-size: 24px;
+    text-align: right;
+    font-weight: bold;
+}

@@ -1,0 +1,16 @@
+<ion-list>
+  <ion-item>
+    <i class="icon ion-card"></i>
+    {{ card_brand}} {{ card_number}}
+    <span class="button-selector"><i class="icon ion-arrow-down-b"></i></span>
+  </ion-item>
+  <ion-item>
+    <i class="icon ion-home"></i>
+    {{ address }}
+    <span class="button-selector"><i class="icon ion-arrow-down-b"></i></span>
+  </ion-item>
+  <ion-item id="checkout-total">
+    <i class="icon ion-android-cart"></i>
+    <span>Total: ${{ totalCart }}</span>
+  </ion-item>
+</ion-list>

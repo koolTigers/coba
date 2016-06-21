@@ -3,9 +3,10 @@ angular.module('cobaApp', [
   'ionic-material', 
   'firebase',
   'ionMDRipple',
+  'ngCordova',
   'cobaApp.controllers'])
 
-.run(function($ionicPlatform, $rootScope,  $ionicPopup) {
+.run(function($ionicPlatform, $rootScope,  $ionicPopup, $cordovaGeolocation, $firebaseArray) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -19,6 +20,9 @@ angular.module('cobaApp', [
   var savedCart = localStorage.getItem('cart');
   if(savedCart) {
     $rootScope.cart = JSON.parse(savedCart);
+    $rootScope.totalCart = $rootScope.cart.reduce(function(last, actual) {
+      return last + (actual.item.price * actual.quantity);
+    }, 0);
   }
 
   $rootScope.showCart = function() {
@@ -31,11 +35,75 @@ angular.module('cobaApp', [
           text: 'Cancelar'
         }, {
           text: 'Ordenar',
-          type: 'button-positive'
+          type: 'button-positive',
         }
       ] 
-    })
+    });
+    
+    cartPopup.then(function() {
+      var checkoutScope = $rootScope.$new();
+      // Some Ugly as fuck hardcoding
+      checkoutScope.card_brand = 'VISA';
+      checkoutScope.card_number = '4012888888881881';
+      checkoutScope.address = 'Paseo de las Palmas #275'
+
+      $ionicPopup.show({
+        templateUrl: 'templates/checkout.html',
+        scope: checkoutScope,
+        title: 'Pagar',
+        cssClass: 'cart-popup',
+        buttons: [
+          {
+            text: 'Cancelar'
+          },
+          {
+            text: 'Pagar',
+            type: 'button-positive',
+          }
+        ]
+      }).then(function(){
+        $cordovaGeolocation
+          .getCurrentPosition({
+            timeout: 10000,
+            enableHighAccuracy: false
+          })
+          .then(function(position) {
+            var fireRef = firebase.database().ref().child('orders');
+            var orders = $firebaseArray(fireRef);
+            orders.$add({
+              lat: position.coords.latitude,
+              longi: position.coords.longitude,
+              products: $rootScope.cart.map(function(elem) {
+                return { name: elem.item.name, quantity: elem.quantity };
+              }),
+              totalProducts: $rootScope.cart.reduce(function(last, current) {
+                return last + current.quantity;
+              }, 0),
+              totalPrice: $rootScope.totalCart,
+              shop: "Abarrotes San Juan (168m)"
+            }).then(function() {
+              $ionicPopup.show({
+                title: 'Éxito!',
+                template: 'Tu orden ha sido agregada correctamente',
+                buttons: [
+                  {
+                    text: "Ok!",
+                    type: 'button-positive'
+                  }
+                ]
+              }).then(function() {
+                $rootScope.cart = [];
+                $rootScope.totalCart = 0;
+                localStorage.removeItem('cart');
+              });
+            });
+          }, function(err) {
+            alert(err);
+          });
+      });
+    });
   };
+
 })
 
 .config(function($stateProvider, $urlRouterProvider) {

@@ -8,11 +8,23 @@
         <img ng-src="{{ product.photo }}" class="detail-image">
       </div>
       <div class="detail-data">
+        <p>
+          <i class="icon ion-location"></i>
+          <span>{{ product.shop }}</span>
+        </p>
         <p>{{ product.description }}</p>
       </div>
       <div class="detail-price">
         <p>$ {{ product.price }}</p>
       </div>
     </ion-pane>
+    <button id="add-to-cart-button" class="button button-fab button-fab-bottom-right button-positive"
+      ng-click="showAddToCartPopup()">
+      <i class="icon ion-plus-round"></i>
+    </button>
+    <button class="button button-fab button-fab-bottom-right button-energized-900"
+      ng-click="showCart()">
+      <i class="icon ion-android-cart"></i>
+    </button>
   </ion-content>
 </ion-view>

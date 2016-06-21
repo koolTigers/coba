@@ -25,63 +25,82 @@ function aToPrice(price) {
     return price = Number(price).toFixed(2);
 }
 
+function inventory() {
+    getProductsByShop("Abarrotes San Juan (168m)", function(val){
+        prodArray = []
+        for (p in val) {
+            prodArray.push({ barcode:val[p].barcode, name:val[p].name, description:val[p].description})
+        }
+        inventory_body = [{
+            view:"datatable", 
+            columns:[
+                { id:"barcode",    header:"Codigo de barras",              width:150},
+                { id:"name",   header:"Nombre del producto",    width:250},
+                { id:"description",    header:"Descripcion",      width:180},
+            ],
+            data: prodArray
+        }];
+
+    });
+}
 ventas_body = [
+{
+    view: "form",
+    elements: [
     {
-        view: "form",
-        elements: [
-            {
-                cols: [
-                    {
-                        id: "search_text",
-                        view: "text",
-                        borderless: true,
-                        placeholder: "Comienza a buscar un producto...",
-                        on: {
-                            onKeyPress: keyPress_barcode,
-                            onAfterRender: function() {
-                                this.focus();
-                            }
-                        }
-                    },
-                    {view: "icon", icon: "search"}
-                ]
+        cols: [
+        {
+            id: "search_text",
+            view: "text",
+            borderless: true,
+            placeholder: "Comienza a buscar un producto...",
+            on: {
+                onKeyPress: keyPress_barcode,
+                onAfterRender: function() {
+                    this.focus();
+                }
             }
-        ]
-    },
-    {
-        id: "products_list",
-        view: "list",
-        template: function(data) {
-            var tmp = "<table class=\"prod_list\"><tr>" +
-                "<td><img src=\"" + data.image + "\"></td>" +
-                "<td>" + data.product + "</td>" +
-                "<td>" + data.cant + " x $ " + aToPrice(data.price) + " = </td>" +
-                "<td>$</td>" +
-                "<td>" + aToPrice(data.cant * data.price) + "</td>" +
-                "</tr></table>";
-            return tmp;
         },
-        select: true,
-        data: [
-            
-        ],
-        type: {
-            height: 60
-        }, 
-    },
-    {
-        view: "form",
-        elements: [
-            {
-                cols: [
-                    {},
-                    {view: "label", label: "Total"}
-                ]
-            }
+        {view: "icon", icon: "search"}
         ]
     }
+    ]
+},
+{
+    id: "products_list",
+    view: "list",
+    template: function(data) {
+        var tmp = "<table class=\"prod_list\"><tr>" +
+        "<td><img src=\"" + data.image + "\"></td>" +
+        "<td>" + data.product + "</td>" +
+        "<td>" + data.cant + " x $ " + aToPrice(data.price) + " = </td>" +
+        "<td>$</td>" +
+        "<td>" + aToPrice(data.cant * data.price) + "</td>" +
+        "</tr></table>";
+        return tmp;
+    },
+    select: true,
+    data: [
+
+    ],
+    type: {
+        height: 60
+    }, 
+},
+{
+    view: "form",
+    elements: [
+    {
+        cols: [
+        {},
+        {view: "label", label: "Total"}
+        ]
+    }
+    ]
+}
 ];
-pedidos_body = [];
+pedidos_body = []
+inventory_body = []
 
 // MAIN Layout
 
@@ -102,12 +121,12 @@ main_smenu = {
         scroll: false,
         template: "<span class='webix_icon fa-#icon#'></span>&nbsp;&nbsp;#value#",
         data: [
-            {id: 1, value: "Venta", icon: "usd"},
-            {id: 2, value: "Pedidos a Domicilio", icon: "home"},
-            {id: 3, value: "Inventario", icon: "cubes"},
-            {id: 4, value: "Reportes", icon: "line-chart"},
-            {id: 5, value: "Usuarios", icon: "users"},
-            {id: 6, value: "Administracion", icon: "cog"},
+        {id: 1, value: "Venta", icon: "usd"},
+        {id: 2, value: "Pedidos a Domicilio", icon: "home"},
+        {id: 3, value: "Inventario", icon: "cubes"},
+        {id: 4, value: "Reportes", icon: "line-chart"},
+        {id: 5, value: "Usuarios", icon: "users"},
+        {id: 6, value: "Administracion", icon: "cog"},
         ],
         select: true,
         type: {
@@ -118,11 +137,13 @@ main_smenu = {
                 var bodyContent = [];
                 switch (id) {
                     case "1":
-                        bodyContent = ventas_body;
-                        break;
+                    bodyContent = ventas_body;
+                    break;
                     case "2":
-                        bodyContent = pedidos_body;
-                        break;
+                    bodyContent = pedidos_body;
+                    break;
+                    case "3":
+                    bodyContent = inventory_body;
                 }
                 $$("main_body").define({
                     rows: bodyContent
@@ -140,7 +161,7 @@ main_smenu = {
         }
     }
 };
-    
+
 main_body = {
     id: "main_body",
     view: "layout",
@@ -152,20 +173,20 @@ main_header = {
     id: "main_header",
     view: "toolbar",
     elements: [
-        {
-            view: "icon", icon: "bars",
-            click: function(){
-                if( $$("main_smenu").config.hidden){
-                    $$("main_smenu").show();
-                }
-                else {
-                    $$("main_smenu").hide();
-                }
+    {
+        view: "icon", icon: "bars",
+        click: function(){
+            if( $$("main_smenu").config.hidden){
+                $$("main_smenu").show();
             }
-        },
-        {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta"},
-        {},
-        {view: "button", type:"icon", icon: "user", maxWidth: 100, align: "right", label: "&nbsp;&nbsp;Mi Cuenta"}
+            else {
+                $$("main_smenu").hide();
+            }
+        }
+    },
+    {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta"},
+    {},
+    {view: "button", type:"icon", icon: "user", maxWidth: 100, align: "right", label: "&nbsp;&nbsp;Mi Cuenta"}
     ]
 };
 
@@ -174,12 +195,13 @@ main_layout = {
     id: "main_layout",
     view: "layout",
     rows: [
-        main_header,
-        main_body
+    main_header,
+    main_body
     ]
 };
 
 webix.ready(function(){
+    inventory()
     webix.ui(main_layout);
     webix.ui(main_smenu);
     $$("main_body").define({

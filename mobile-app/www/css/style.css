@@ -38,7 +38,14 @@
   padding-top: 40px;
 }
 
-.popular-product {}
+.popular-product-link {
+  display: block;
+}
+
+.ion-ripple {
+  background-color: #ccc;
+}
+
 .popular-product .image-container {
   width: 30%;
   float: left;

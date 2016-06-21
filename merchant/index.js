@@ -1,3 +1,25 @@
+
+inventory_body = [
+    {
+        id: "inventory_table",
+        view:"datatable", 
+        columns:[
+            { id:"barcode", header:"Codigo de barras", width:150},
+            { id:"name", header:"Nombre del producto", width:400},
+            { id:"description", header:"Descripcion", width:400},
+        ],
+        on: {
+            onAfterRender: function () {
+                getProductsByShop("Abarrotes San Juan (168m)", function(val){
+                    $$("inventory_table").parse(val);
+                });
+            }
+        }
+    }
+];
+
+// Sells
+
 var __search_barcode = "";
 
 function search_barcode(barcode) {
@@ -40,26 +62,7 @@ function keyPress_barcode(code, event) {
 function aToPrice(price) {
     return price = Number(price).toFixed(2);
 }
-/*
-function inventory() {
-    getProductsByShop("Abarrotes San Juan (168m)", function(val){
-        prodArray = []
-        for (p in val) {
-            prodArray.push({ barcode:val[p].barcode, name:val[p].name, description:val[p].description})
-        }
-        inventory_body = [{
-            view:"datatable", 
-            columns:[
-                { id:"barcode",    header:"Codigo de barras",              width:150},
-                { id:"name",   header:"Nombre del producto",    width:250},
-                { id:"description",    header:"Descripcion",      width:180},
-            ],
-            data: prodArray
-        }];
 
-    });
-}
-*/
 ventas_body = [
     {
         view: "form",
@@ -120,7 +123,6 @@ ventas_body = [
 ];
 
 pedidos_body = [];
-inventory_body = [];
 
 // MAIN Layout
 
@@ -169,6 +171,10 @@ main_smenu = {
                     rows: bodyContent
                 });
                 $$("main_body").reconstruct();
+                $$("main_title").define({
+                    label: trg.innerHTML
+                });
+                $$("main_title").refresh();
                 setTimeout(function () {
                     if( $$("main_smenu").config.hidden){
                         $$("main_smenu").show();

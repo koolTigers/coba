@@ -1,3 +1,26 @@
+/*
+{id: 1, cant: 1, sku: "7501055300341", product: "Sprite lata 355ml", price: 10, image: "https://dworkins.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/s/p/sprite_355_1_1_1_1_2_1_1_1_1.jpg"},
+{id: 2, cant: 2, sku: "7501031323302", product: "7up lima-limon lata 355ml", price: 9.5, image: "https://www.lacomer.com.mx/superc/img_art/7501031323302_1.jpg"},
+{id: 3, cant: 1, sku: "7501086801015", product: "Epura 1.5L", price: 12.34, image: "http://farmaciasdrdi.com/wp-content/uploads/2016/03/AGUA-EPURA-1-5-LITROS.jpg"}
+*/
+
+var __search_barcode = "";
+
+function search_barcode(barcode) {
+    getProductByCodeAndShop(barcode, "Abarrotes San Juan (168m)", function(val){
+        webix.message(val);
+    })
+}
+
+function keyPress_barcode(code, event) {
+    if(code >= 48 && code <= 58) {
+        __search_barcode += String.fromCharCode(code);
+    } else if(__search_barcode.length > 0) {
+        search_barcode(__search_barcode);
+        __search_barcode = "";
+    }
+}
+
 function aToPrice(price) {
     return price = Number(price).toFixed(2);
 }
@@ -12,7 +35,13 @@ ventas_body = [
                         id: "search_text",
                         view: "text",
                         borderless: true,
-                        placeholder: "Comienza a buscar un producto..."
+                        placeholder: "Comienza a buscar un producto...",
+                        on: {
+                            onKeyPress: keyPress_barcode,
+                            onAfterRender: function() {
+                                this.focus();
+                            }
+                        }
                     },
                     {view: "icon", icon: "search"}
                 ]
@@ -34,9 +63,7 @@ ventas_body = [
         },
         select: true,
         data: [
-            {id: 1, cant: 1, sku: "7501055300341", product: "Sprite lata 355ml", price: 10, image: "https://dworkins.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/s/p/sprite_355_1_1_1_1_2_1_1_1_1.jpg"},
-            {id: 2, cant: 2, sku: "7501031323302", product: "7up lima-limon lata 355ml", price: 9.5, image: "https://www.lacomer.com.mx/superc/img_art/7501031323302_1.jpg"},
-            {id: 3, cant: 1, sku: "7501086801015", product: "Epura 1.5L", price: 12.34, image: "http://farmaciasdrdi.com/wp-content/uploads/2016/03/AGUA-EPURA-1-5-LITROS.jpg"}
+            
         ],
         type: {
             height: 60
@@ -101,6 +128,14 @@ main_smenu = {
                     rows: bodyContent
                 });
                 $$("main_body").reconstruct();
+                setTimeout(function () {
+                    if( $$("main_smenu").config.hidden){
+                        $$("main_smenu").show();
+                    }
+                    else {
+                        $$("main_smenu").hide();
+                    }
+                },500);
             }
         }
     }
@@ -123,8 +158,9 @@ main_header = {
                 if( $$("main_smenu").config.hidden){
                     $$("main_smenu").show();
                 }
-                else
+                else {
                     $$("main_smenu").hide();
+                }
             }
         },
         {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta"},

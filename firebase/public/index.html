@@ -55,6 +55,18 @@
 			firebase.database().ref().update(updates)
 		}
 
+		function insertOrder(shop, products, address){
+			var orderId = firebase.database().ref().child('orders').push().key;
+			var order = {
+				shop: shop,
+				products: products,
+				address: address
+			}
+			var updates = {};
+			updates['/orders/' + orderId] = order
+			firebase.database().ref().update(updates)
+		}
+
 		function getAllProducts(callback) {
 			//var ref = new firebase("https://coba-54f85.firebaseio.com/products");
 			ref = firebase.database().ref('products')
@@ -77,6 +89,20 @@
 				callback(snapshot.val())
 			});
 		}
+
+		function getProductByCodeAndShop(barcode, shop, callback) {
+			ref = firebase.database().ref('products')
+			ref.orderByChild("barcode").equalTo(barcode).on("value", function(snapshot) {
+				var product = snapshot.val()
+				for (var pr in product) {
+					if (product[pr].shop == shop) {
+						callback(product[pr])
+					}
+				}
+			});
+		}
+
+
 		getAllProducts(function(val){
 			console.log(val)
 		})
@@ -84,6 +110,10 @@
 			console.log(val)
 		})
 		getProductByBarcode("0750105530007", function(val){
+			console.log(val)
+		})
+
+		getProductByCodeAndShop("0750105530007", "Abarrotes San Juan (168m)", function(val){
 			console.log(val)
 		})
 

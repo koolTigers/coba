@@ -21,9 +21,9 @@ webix.protoUI({
             }
             if(typeof this.config.gmeClient == "string") {
             	//Use google api for bussiness with the client id
-            	script.src = "//maps.googleapis.com/maps/api/js?" + libs + "client=" + this.config.gmeClient + "&callback="+name;            	
+            	script.src = "https://maps.googleapis.com/maps/api/js?" + libs + "client=" + this.config.gmeClient + "&callback="+name;            	
             } else {
-            	script.src = "//maps.google.com/maps/api/js?" + libs + "callback="+name;
+            	script.src = "https://maps.google.com/maps/api/js?" + libs + "callback="+name;
             }
             document.getElementsByTagName("head")[0].appendChild(script);
         }

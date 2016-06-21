@@ -1,5 +1,6 @@
 // Orders
 
+var _orders_loaded = false;
 var orders_body = [
     {
         type: "space",
@@ -17,20 +18,34 @@ var orders_body = [
                 ],
                 data: [],
                 on: {
-                    onAfterRender: function () {
-                        setTimeout(function () {
-                            $$("order_table").parse(__shop_orders);
-                        }, 500);
+                    onAfterLoad: function () {
+                        if(!_orders_loaded) {
+                            for(var idx in __shop_orders) {
+                                this.add(__shop_orders[idx]);
+                            }
+                            _orders_loaded = false;
+                        }
+                        _orders_loaded = true;
                     },
                     onItemClick: function (boj) {
-                        $$("order_products_table").parse(this.getItem(this.getSelectedId()).products);
+                        var item = this.getItem(this.getSelectedId());
+                        $$("order_products_table").parse(item.products);
+                        var map = $$("delivery_map").map;
+                        var myLatLng = {lat: item.lat, lng: item.longi};
+                        var marker = new google.maps.Marker({
+                            position: myLatLng,
+                            map: map,
+                            title: item.address
+                        });
+                        map.setCenter(myLatLng);
+                        map.setZoom(12);
                     }
                 }
             },
             {
-                id: "localizacionMap",
+                id: "delivery_map",
                 view: "google-map",
-                zoom: 10,
+                zoom: 4,
                 center: [24.527135, -102.65625]
             }
         ]
@@ -104,7 +119,7 @@ function order_received() {
 }
 
 // Inventory
-
+var _inventory_loaded = false;
 inventory_body = [
     {
         id: "inventory_table",
@@ -115,11 +130,18 @@ inventory_body = [
             { id:"name", header:"Nombre del producto", width:400},
             { id:"description", header:"Descripcion", width:400},
         ],
+        data: [],
         on: {
-            onAfterRender: function () {
-                getProductsByShop("Abarrotes San Juan (168m)", function(val){
-                    $$("inventory_table").parse(val);
-                });
+            onAfterLoad: function () {
+                if (!_inventory_loaded) {
+                    getProductsByShop("Abarrotes San Juan (168m)", function(val){
+                        for(var idx in val) {
+                            $$("inventory_table").add(val[idx]);
+                        }
+                        _inventory_loaded = false;
+                    });
+                    _inventory_loaded = true;                    
+                }
             }
         }
     }
@@ -245,10 +267,16 @@ function change_menu(id) {
         case "3":
         bodyContent = inventory_body;
     }
-    $$("main_body").define({
-        rows: bodyContent
+    $$("main_body").destructor();
+    $$("mmain_cbody").define({
+        rows: [{
+            id: "main_body",
+            view: "layout",
+            type: "space",
+            rows: bodyContent
+        }]
     });
-    $$("main_body").reconstruct();
+    $$("mmain_cbody").reconstruct();
     $$("main_title").define({
         label: "<span class='title_nobadge'>" + trg.innerHTML + "</span>"
     });
@@ -305,10 +333,17 @@ main_smenu = {
 };
 
 main_body = {
-    id: "main_body",
+    id: "mmain_cbody",
     view: "layout",
-    type: "space",
-    rows: [{}]
+    type: "clear",
+    rows: [
+        {
+            id: "main_body",
+            view: "layout",
+            type: "space",
+            rows: [{}]
+        }
+    ]
 };
 
 main_header = {

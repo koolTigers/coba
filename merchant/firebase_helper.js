@@ -76,7 +76,7 @@ function getProductByBarcode(barcode, callback) {
 
 function getProductsByShop(shop, callback) {
 	ref = firebase.database().ref('products')
-	ref.orderByChild("shop").equalTo(shop).on("value", function(snapshot) {
+	ref.orderByChild("shop").equalTo(shop).once("value", function(snapshot) {
 		callback(snapshot.val())
 	});
 }

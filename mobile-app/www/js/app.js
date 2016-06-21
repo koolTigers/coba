@@ -19,6 +19,9 @@ angular.module('cobaApp', [
   var savedCart = localStorage.getItem('cart');
   if(savedCart) {
     $rootScope.cart = JSON.parse(savedCart);
+    $rootScope.totalCart = $rootScope.cart.reduce(function(last, actual) {
+      return last + (actual.item.price * actual.quantity);
+    }, 0);
   }
 
   $rootScope.showCart = function() {
@@ -31,11 +34,16 @@ angular.module('cobaApp', [
           text: 'Cancelar'
         }, {
           text: 'Ordenar',
-          type: 'button-positive'
+          type: 'button-positive',
+          onTap: checkout
         }
       ] 
     })
   };
+
+  function checkout() {
+    
+  }
 })
 
 .config(function($stateProvider, $urlRouterProvider) {

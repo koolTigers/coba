@@ -48,6 +48,10 @@ angular.module('cobaApp.controllers', [])
               $rootScope.cart = [];
             }
             $rootScope.cart.push(angular.copy($scope.cartItem));
+            $rootScope.totalCart = $rootScope.cart.reduce(function(last, actual) {
+              return last + (actual.item.price * actual.quantity);
+            }, 0);
+
             localStorage.setItem('cart', angular.toJson($rootScope.cart)); 
           }
         }

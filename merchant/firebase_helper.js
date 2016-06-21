@@ -1,24 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Welcome to Firebase Hosting</title>
-	<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
-	<script>
-  // Initialize Firebase
-  var config = {
-  	apiKey: "AIzaSyAe2myUNdB6hIGx949kU2MaD6JsEPqEIYg",
-  	authDomain: "coba-54f85.firebaseapp.com",
-  	databaseURL: "https://coba-54f85.firebaseio.com/",
-  	storageBucket: "",
-  };
-  firebase.initializeApp(config);
-</script>
-</head>
-<body>
-	<h1>Vamos a ganar kool tigers!!!</h1>
-
-	<script type="text/javascript">
 		function insertProduct(name, description, category, type, unit, size, brand, barcode, photo, store) {
 			var productID = firebase.database().ref().child('products').push().key;
 			var product = {
@@ -77,16 +56,3 @@
 				callback(snapshot.val())
 			});
 		}
-		getAllProducts(function(val){
-			console.log(val)
-		})
-		getProductsByName("Coca", function(val){
-			console.log(val)
-		})
-		getProductByBarcode("0750105530007", function(val){
-			console.log(val)
-		})
-
-	</script>
-</body>
-</html>

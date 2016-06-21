@@ -1,11 +1,83 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Welcome to Firebase Hosting</title>
-
-  </head>
-  <body>
+<head>
+	<meta charset="utf-8">
+	<title>Welcome to Firebase Hosting</title>
+	<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+	<script>
+  // Initialize Firebase
+  var config = {
+  	apiKey: "AIzaSyAe2myUNdB6hIGx949kU2MaD6JsEPqEIYg",
+  	authDomain: "coba-54f85.firebaseapp.com",
+  	databaseURL: "https://coba-54f85.firebaseio.com/",
+  	storageBucket: "",
+  };
+  firebase.initializeApp(config);
+</script>
+</head>
+<body>
 	<h1>Vamos a ganar kool tigers!!!</h1>
-  </body>
+
+	<script type="text/javascript">
+		function insertProduct(name, description, category, type, unit, size, brand, barcode, photo, store) {
+			var productID = firebase.database().ref().child('products').push().key;
+			var product = {
+				name: name,
+				description: description,
+				category: category,
+				type: type,
+				unit: unit,
+				size: size,
+				brand: brand,
+				barcode: barcode,
+				photo: photo
+			}
+			var updates = {};
+			updates['/products/' + productID] = product
+			firebase.database().ref().update(updates)
+		}
+		function insertShop(name){
+			var shopID = firebase.database().ref().child('shops').push().key;
+			var shop = {
+				name: name
+			}
+			var updates = {};
+			updates['/shops/' + shopID] = shop
+			firebase.database().ref().update(updates)
+		}
+		function insertShopProduct(idProduct, idShop, price){
+			var productShop = firebase.database().ref().child('products-shop').push().key;
+			var product = {
+				price: price
+			}
+			var updates = {};
+			updates['/products-shop/' + idShop + '/' + idProduct + '/' + productShop] = product
+			firebase.database().ref().update(updates)
+		}
+
+		function getAllProducts(callback) {
+			//var ref = new firebase("https://coba-54f85.firebaseio.com/products");
+			ref = firebase.database().ref('products')
+			ref.on("value", function(snapshot) {
+				//console.log(snapshot.val())
+				callback(snapshot.val())
+			});
+		}
+
+		function getProductsByName(name, callback) {
+			ref = firebase.database().ref('products')
+			ref.startAt(name).limit(20).once("value", function(snapshot) {
+				//console.log(snapshot.val())
+				callback(snapshot.val())
+			});
+		}
+		getAllProducts(function(val){
+			console.log(val)
+		})
+		getProductsByName("Coca", function(val){
+			console.log(val)
+		})
+
+	</script>
+</body>
 </html>

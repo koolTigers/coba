@@ -34,39 +34,49 @@ function insertShopProduct(idProduct, idShop, price){
 	firebase.database().ref().update(updates)
 }
 
+function insertOrder(shop, products, address){
+	var orderId = firebase.database().ref().child('orders').push().key;
+	var order = {
+		shop: shop,
+		products: products,
+		address: address
+	}
+	var updates = {};
+	updates['/orders/' + orderId] = order
+	firebase.database().ref().update(updates)
+}
+
 function getAllProducts(callback) {
-//var ref = new firebase("https://coba-54f85.firebaseio.com/products");
-ref = firebase.database().ref('products')
-ref.on("value", function(snapshot) {
-//console.log(snapshot.val())
-callback(snapshot.val())
-});
+	ref = firebase.database().ref('products')
+	ref.once("value", function(snapshot) {
+		callback(snapshot.val())
+	});
 }
 
 function getProductsByName(name, callback) {
 	ref = firebase.database().ref('products')
-	ref.orderByKey().startAt(name).on("value", function(snapshot) {
+	ref.orderByKey().startAt(name).once("value", function(snapshot) {
 		callback(snapshot.val())
 	});
 }
 
 function getProductByBarcode(barcode, callback) {
 	ref = firebase.database().ref('products')
-	ref.orderByChild("barcode").equalTo(barcode).on("value", function(snapshot) {
+	ref.orderByChild("barcode").equalTo(barcode).once("value", function(snapshot) {
 		callback(snapshot.val())
 	});
 }
 
 function getProductByBarcode(barcode, callback) {
 	ref = firebase.database().ref('products')
-	ref.orderByChild("barcode").equalTo(barcode).on("value", function(snapshot) {
+	ref.orderByChild("barcode").equalTo(barcode).once("value", function(snapshot) {
 		callback(snapshot.val())
 	});
 }
 
 function getProductByCodeAndShop(barcode, shop, callback) {
 	ref = firebase.database().ref('products')
-	ref.orderByChild("barcode").equalTo(barcode).on("value", function(snapshot) {
+	ref.orderByChild("barcode").equalTo(barcode).once("value", function(snapshot) {
 		var product = snapshot.val()
 		for (var pr in product) {
 			if (product[pr].shop == shop) {

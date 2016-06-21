@@ -55,6 +55,18 @@
 			firebase.database().ref().update(updates)
 		}
 
+		function insertOrder(shop, products, address){
+			var orderId = firebase.database().ref().child('orders').push().key;
+			var order = {
+				shop: shop,
+				products: products,
+				address: address
+			}
+			var updates = {};
+			updates['/orders/' + orderId] = order
+			firebase.database().ref().update(updates)
+		}
+
 		function getAllProducts(callback) {
 			//var ref = new firebase("https://coba-54f85.firebaseio.com/products");
 			ref = firebase.database().ref('products')
@@ -89,6 +101,8 @@
 				}
 			});
 		}
+
+
 		getAllProducts(function(val){
 			console.log(val)
 		})

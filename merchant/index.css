@@ -49,3 +49,21 @@ table.prod_list td:nth-child(5) {
     text-align: right;
     font-weight: bold;
 }
+
+table.sell_total {
+	width: 100%;
+	font-size: 24px;
+	font-weight: bold;
+	line-height: 60px;
+}
+
+
+table.sell_total td:nth-child(2) {
+    width: 150px;
+    text-align: right;
+}
+
+table.sell_total td:nth-child(3) {
+    width: 200px;
+    text-align: right;
+}

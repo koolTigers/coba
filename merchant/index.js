@@ -1,21 +1,37 @@
-/*
-{id: 1, cant: 1, sku: "7501055300341", product: "Sprite lata 355ml", price: 10, image: "https://dworkins.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/s/p/sprite_355_1_1_1_1_2_1_1_1_1.jpg"},
-{id: 2, cant: 2, sku: "7501031323302", product: "7up lima-limon lata 355ml", price: 9.5, image: "https://www.lacomer.com.mx/superc/img_art/7501031323302_1.jpg"},
-{id: 3, cant: 1, sku: "7501086801015", product: "Epura 1.5L", price: 12.34, image: "http://farmaciasdrdi.com/wp-content/uploads/2016/03/AGUA-EPURA-1-5-LITROS.jpg"}
-*/
-
 var __search_barcode = "";
 
 function search_barcode(barcode) {
+    var id, item, total;
+    for(id = $$("products_list").getFirstId();
+        id != null; id = $$("products_list").getNextId(id)) {
+        item = $$("products_list").getItem(id);
+        if(item.barcode == barcode) {
+            total = $$("sell_total").getValues();
+            item.quantity++;
+            total.quantity++;
+            total.total += item.price;
+            $$("products_list").remove(id);
+            $$("products_list").add(item);
+            $$("sell_total").setValues(total);
+            return;
+        }
+    }
     getProductByCodeAndShop(barcode, "Abarrotes San Juan (168m)", function(val){
-        webix.message(val);
-    })
+        var total;
+        total = $$("sell_total").getValues();
+        val.quantity = 1;
+        total.quantity++;
+        total.total += val.price;
+        $$("products_list").add(val);
+        $$("sell_total").setValues(total);
+    });
 }
 
 function keyPress_barcode(code, event) {
     if(code >= 48 && code <= 58) {
         __search_barcode += String.fromCharCode(code);
     } else if(__search_barcode.length > 0) {
+        $$("search_text").setValue("");
         search_barcode(__search_barcode);
         __search_barcode = "";
     }
@@ -24,7 +40,7 @@ function keyPress_barcode(code, event) {
 function aToPrice(price) {
     return price = Number(price).toFixed(2);
 }
-
+/*
 function inventory() {
     getProductsByShop("Abarrotes San Juan (168m)", function(val){
         prodArray = []
@@ -43,64 +59,68 @@ function inventory() {
 
     });
 }
+*/
 ventas_body = [
-{
-    view: "form",
-    elements: [
     {
-        cols: [
-        {
-            id: "search_text",
-            view: "text",
-            borderless: true,
-            placeholder: "Comienza a buscar un producto...",
-            on: {
-                onKeyPress: keyPress_barcode,
-                onAfterRender: function() {
-                    this.focus();
-                }
+        view: "form",
+        elements: [
+            {
+                cols: [
+                    {
+                        id: "search_text",
+                        view: "text",
+                        borderless: true,
+                        placeholder: "Comienza a buscar un producto...",
+                        on: {
+                            onKeyPress: keyPress_barcode,
+                            onAfterRender: function() {
+                                this.focus();
+                            }
+                        }
+                    },
+                    {view: "icon", icon: "search"}
+                ]
             }
-        },
-        {view: "icon", icon: "search"}
         ]
-    }
-    ]
-},
-{
-    id: "products_list",
-    view: "list",
-    template: function(data) {
-        var tmp = "<table class=\"prod_list\"><tr>" +
-        "<td><img src=\"" + data.image + "\"></td>" +
-        "<td>" + data.product + "</td>" +
-        "<td>" + data.cant + " x $ " + aToPrice(data.price) + " = </td>" +
-        "<td>$</td>" +
-        "<td>" + aToPrice(data.cant * data.price) + "</td>" +
-        "</tr></table>";
-        return tmp;
     },
-    select: true,
-    data: [
-
-    ],
-    type: {
-        height: 60
-    }, 
-},
-{
-    view: "form",
-    elements: [
     {
-        cols: [
-        {},
-        {view: "label", label: "Total"}
-        ]
+        id: "products_list",
+        view: "list",
+        template: function(data) {
+            var tmp = "<table class=\"prod_list\"><tr>" +
+                "<td><img src=\"" + data.photo + "\"></td>" +
+                "<td>" + data.description + "</td>" +
+                "<td>" + data.quantity + " x $ " + aToPrice(data.price) + " = </td>" +
+                "<td>$</td>" +
+                "<td>" + aToPrice(data.quantity * data.price) + "</td>" +
+                "</tr></table>";
+            return tmp;
+        },
+        select: true,
+        data: [
+
+        ],
+        type: {
+            height: 60
+        }, 
+    },
+    {
+        id: "sell_total",
+        view: "template",
+        height: 80,
+        template: function (data) {
+            return "<table class=\"sell_total\"><tr>" +
+                "<td>" + data.quantity + " Productos</td>" +
+                "<td>Total:&nbsp;&nbsp;$</td>" +
+                "<td>" + aToPrice(data.total) + "</td>" +
+                "</tr></table>";
+        },
+        data: {quantity: 0, total: 0}
     }
-    ]
-}
 ];
-pedidos_body = []
-inventory_body = []
+
+pedidos_body = [];
+inventory_body = [];
 
 // MAIN Layout
 
@@ -186,6 +206,8 @@ main_header = {
     },
     {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta"},
     {},
+    {view: "label", label: "LOCALITO"},
+    {},
     {view: "button", type:"icon", icon: "user", maxWidth: 100, align: "right", label: "&nbsp;&nbsp;Mi Cuenta"}
     ]
 };
@@ -201,7 +223,6 @@ main_layout = {
 };
 
 webix.ready(function(){
-    inventory()
     webix.ui(main_layout);
     webix.ui(main_smenu);
     $$("main_body").define({

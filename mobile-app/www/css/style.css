@@ -124,3 +124,8 @@
 .cart-popup .popup{
   width: 350px;
 }
+
+.cart-popup .button-small {
+  padding: 2px 4px 1px;
+  font-size: 12px;
+}

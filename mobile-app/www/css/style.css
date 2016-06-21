@@ -1,1 +1,20 @@
 /* Empty. Add your own CSS if you like */
+.bar-searchbox {
+  height: 95px;
+}
+
+.item-searchbox-bar {
+  position: absolute;
+  top: 40px;
+  border: none;
+  padding: 10px;
+}
+
+.item-searchbox-bar i {
+  background-color: white;
+  padding: 9px;
+}
+
+.item-searchbox-bar input {
+  background-color: white;
+}

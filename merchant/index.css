@@ -3,7 +3,7 @@ span.webix_icon {
 }
 
 .coba_menu .webix_view{
-	background-color: #ECEFF1;
+	background-color: #eaeaea;
 }
 
 .coba_menu .webix_list_item{
@@ -70,4 +70,12 @@ table.sell_total td:nth-child(3) {
 
 span.title_nobadge .webix_badge {
     display: none;
+}
+
+.webix_ss_header, .webix_ss_header TD {
+    font-weight: bold;
+}
+
+.tbl_hover {
+    background: #76B4BD;
 }

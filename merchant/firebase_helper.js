@@ -85,3 +85,17 @@ function getProductByCodeAndShop(barcode, shop, callback) {
 		}
 	});
 }
+
+function getOrdersByShop(shop, callback) {
+	ref = firebase.database().ref('orders')
+	ref.orderByKey().startAt(shop).on("child_added", function(snapshot) {
+		callback(snapshot.val())
+	});
+}
+
+function getOrdersByShop(shop, callback) {
+	ref = firebase.database().ref('orders')
+	ref.orderByChild('shop').startAt(shop).on("child_added", function(snapshot) {
+		callback(snapshot.val())
+	});
+}

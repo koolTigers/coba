@@ -67,6 +67,13 @@
 			firebase.database().ref().update(updates)
 		}
 
+		function getOrdersByShop(shop, callback) {
+			ref = firebase.database().ref('orders')
+			ref.orderByChild('shop').startAt(shop).on("child_added", function(snapshot) {
+				callback(snapshot.val())
+			});
+		}
+
 		function getAllProducts(callback) {
 			//var ref = new firebase("https://coba-54f85.firebaseio.com/products");
 			ref = firebase.database().ref('products')
@@ -114,6 +121,10 @@
 		})
 
 		getProductByCodeAndShop("0750105530007", "Abarrotes San Juan (168m)", function(val){
+			console.log(val)
+		})
+
+		getOrdersByShop("tienda", function(val){
 			console.log(val)
 		})
 

@@ -1,4 +1,15 @@
 /* Empty. Add your own CSS if you like */
+
+a {
+  color: #76B4BD !important;
+}
+
+.bar-positive {
+  background-color: #f85289 !important;
+  border-color: #FF0054 !important;
+  background-image: linear-gradient(0deg, #f85289, #f85289 50%, transparent 50%) !important;
+}
+
 .bar-searchbox {
   height: 95px;
 }
@@ -115,6 +126,14 @@
 
 .number-spinner input {
   text-align: center;
+}
+
+.button-energized-900 {
+  background-color: #5098A5 !important;
+}
+
+.button-positive {
+  background-color: #f85289 !important;
 }
 
 #add-to-cart-button {

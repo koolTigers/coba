@@ -18,3 +18,41 @@
 .item-searchbox-bar input {
   background-color: white;
 }
+
+.home-banner {
+  background-image: url(http://www.reasonwhy.es/sites/default/files/cocacola-reasonwhy.es_.jpg);
+  color: white;
+  padding: 35px 15px 15px 15px;
+}
+
+.home-banner h2{
+  color: white;
+  font-size: 32px;
+}
+
+.home-banner span {
+  font-size: 20px;
+}
+
+.content-bar-searchbox {
+  padding-top: 40px;
+}
+
+.popular-product {}
+.popular-product .image-container {
+  width: 30%;
+  float: left;
+}
+
+.popular-product .image-container img {
+  box-shadow: none;
+}
+
+.popular-product-data {
+  width: 65%;
+  float: left;
+}
+
+.popular-product-data h3 {
+  padding: 10px 10px 0 0;
+}

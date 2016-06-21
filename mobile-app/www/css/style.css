@@ -56,3 +56,34 @@
 .popular-product-data h3 {
   padding: 10px 10px 0 0;
 }
+
+.detail-image-container {
+  height: 300px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.detail-image-container img {
+  height: 300px;
+}
+
+.detail-data {
+  width: 60%;
+  float: left;
+}
+
+.detail-data p {
+  padding: 15px;
+  font-size: 18px;
+}
+
+.detail-price {
+  width: 40%;
+  float: left;
+}
+
+.detail-price p {
+  padding: 15px;
+  font-size: 48px;
+  text-align: center;
+}

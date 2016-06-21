@@ -2,6 +2,7 @@ angular.module('cobaApp', [
   'ionic',
   'ionic-material', 
   'firebase',
+  'ionMDRipple',
   'cobaApp.controllers'])
 
 .run(function($ionicPlatform) {
@@ -16,12 +17,29 @@ angular.module('cobaApp', [
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('coba', {
       url: '/',
       templateUrl: 'templates/home.html',
       controller: 'HomeCtrl'
+    })
+    .state('coba.search', {
+      url: '/search',
+      templateUrl: 'templates/search.html',
+      controller: 'SearchCtrl'
+    })
+    .state('detail', {
+      url: '/product/:id',
+      templateUrl: 'templates/detail.html',
+      controller: 'DetailCtrl',
+      resolve: {
+        product: function($stateParams, $firebaseObject) {
+          var fireRef = firebase.database().ref().child('products');
+          var product = $firebaseObject(fireRef.child($stateParams.id));
+          return product.$loaded();
+        }
+      }
     });
 
   $urlRouterProvider.otherwise('/');

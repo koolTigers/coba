@@ -1,4 +1,8 @@
-angular.module('cobaApp', ['ionic', 'ionic-material', 'cobaApp.controllers'])
+angular.module('cobaApp', [
+  'ionic',
+  'ionic-material', 
+  'firebase',
+  'cobaApp.controllers'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {

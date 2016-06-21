@@ -1,0 +1,6 @@
+<ion-list>
+  <ion-item ng-repeat="item in cart">
+    <p>x{{ item.quantity }} {{ item.item.name }}</p>
+    <p>${{ item.quantity * item.item.price }}</p>
+  </ion-item>
+</ion-list>

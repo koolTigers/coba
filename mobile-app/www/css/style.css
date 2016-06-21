@@ -38,7 +38,14 @@
   padding-top: 40px;
 }
 
-.popular-product {}
+.popular-product-link {
+  display: block;
+}
+
+.ion-ripple {
+  background-color: #ccc;
+}
+
 .popular-product .image-container {
   width: 30%;
   float: left;
@@ -73,8 +80,12 @@
 }
 
 .detail-data p {
-  padding: 15px;
+  padding: 0 15px;
   font-size: 18px;
+}
+
+.detail-data p span {
+  font-size: 16px;
 }
 
 .detail-price {
@@ -86,4 +97,30 @@
   padding: 15px;
   font-size: 48px;
   text-align: center;
+}
+
+.number-spinner {
+  display: block;
+  width: 45px;
+  margin: auto;
+}
+
+.number-spinner span {
+  display: block;
+  width: 45px;
+  text-align: center;
+  border: 1px solid #ddd;
+  padding: 0 10px;
+}
+
+.number-spinner input {
+  text-align: center;
+}
+
+#add-to-cart-button {
+  bottom: 85px;
+}
+
+.cart-popup .popup{
+  width: 350px;
 }

@@ -5,7 +5,7 @@ angular.module('cobaApp', [
   'ionMDRipple',
   'cobaApp.controllers'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope,  $ionicPopup) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -15,6 +15,27 @@ angular.module('cobaApp', [
       StatusBar.styleDefault();
     }
   });
+
+  var savedCart = localStorage.getItem('cart');
+  if(savedCart) {
+    $rootScope.cart = JSON.parse(savedCart);
+  }
+
+  $rootScope.showCart = function() {
+    var cartPopup = $ionicPopup.show({
+      templateUrl: 'templates/cart.html',
+      title: 'Carrito',
+      cssClass: 'cart-popup',
+      buttons: [
+        {
+          text: 'Cancelar'
+        }, {
+          text: 'Ordenar',
+          type: 'button-positive'
+        }
+      ] 
+    })
+  };
 })
 
 .config(function($stateProvider, $urlRouterProvider) {

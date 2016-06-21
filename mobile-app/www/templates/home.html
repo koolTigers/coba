@@ -18,7 +18,7 @@
     </ion-list>
     <ion-list>
       <ion-item class="card-item" ng-repeat="product in popularProducts">
-        <a ui-sref="detail({ id: product.$id })" ion-riple>
+        <a class="popular-product-link" ui-sref="detail({ id: product.$id })" ion-ripple>
         <div class="card popular-product">
           <div class="image-container">
             <img ng-src="{{ product.photo }}" />

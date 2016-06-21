@@ -17,18 +17,18 @@
       </ion-item>
     </ion-list>
     <ion-list>
-      <ion-item class="card-item">
+      <ion-item class="card-item" ng-repeat="product in popularProducts">
         <div class="card popular-product">
           <div class="image-container">
-            <img src="http://www.superama.com.mx/Content/images/products/img_large/0750103912014L.jpg" />
+            <img ng-src="{{ product.photo }}" />
           </div>
           <div class="popular-product-data">
-            <h3>Aceite puro de soya Nutrioli 946 ml</h3>
-            <span class="popular-product-price">$25.00</span>
+            <h3>{{ product.name }}</h3>
+            <span class="popular-product-price">$ {{ product.price }}</span>
             <ul class="popular-product-meta">
               <li>
                 <i class="icon ion-location"></i>
-                <span>Miscelanea Don Toño (350m)</span>
+                <span>{{ product.shop }}</span>
               </li>
             </ul>
           </div>

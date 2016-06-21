@@ -67,3 +67,7 @@ table.sell_total td:nth-child(3) {
     width: 200px;
     text-align: right;
 }
+
+span.title_nobadge .webix_badge {
+    display: none;
+}

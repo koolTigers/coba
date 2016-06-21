@@ -1,3 +1,66 @@
+// Orders
+
+var orders_body = [
+    {template: "Tiene los siguientes pedidos por realizar:"},
+    {template: "Lista de Pedidos"},
+];
+
+var __shop_orders = [];
+var __triggerOrder = false;
+
+function triggerOrder() {
+    if (!__triggerOrder) {
+        setTimeout(function () {
+            order_received();
+        },1000);
+        __triggerOrder = true;
+    }
+
+}
+
+function InitOrders() {
+    getOrdersByShop("Abarrotes San Juan (168m)", function(val){
+        __shop_orders.push(val);
+        triggerOrder();
+    });
+}
+
+function orderShowBadges() {
+    // Modify badges
+    $$("main_menu_button").define({
+        badge: __shop_orders.length
+    });
+    $$("main_menu_button").refresh();
+    $$("main_menu_list").updateItem(2, {
+        id: 2,
+        value: "Pedidos a Domicilio",
+        icon: "home",
+        count: __shop_orders.length
+    });
+}
+
+function order_received() {
+    orderShowBadges();
+    webix.modalbox({
+        title: "Pedido a domicilio recibido",
+        buttons:["Si", "No"],
+        text: "&iquest;Ir a ver los pedidos ahora?",
+        width: 400,
+        callback: function(result){
+            switch(result){
+            case 0: 
+                //statement
+                break;
+            case 1:
+                //statement
+                break;
+            }
+        }
+    });
+
+}
+
+// Inventory
 
 inventory_body = [
     {
@@ -122,14 +185,12 @@ ventas_body = [
     }
 ];
 
-pedidos_body = [];
-
 // MAIN Layout
 
 main_smenu = {
     view: "sidemenu",
     id: "main_smenu",
-    width: 200,
+    width: 220,
     position: "left",
     state: function(state){
         var toolbarHeight = $$("main_header").$height;
@@ -138,17 +199,25 @@ main_smenu = {
     },
     css: "coba_menu",
     body:{
+        id: "main_menu_list",
         view: "list",
         borderless: true,
         scroll: false,
-        template: "<span class='webix_icon fa-#icon#'></span>&nbsp;&nbsp;#value#",
+        template: function(data) {
+            var ret =  "<span class='webix_icon fa-" +
+            data.icon + "'></span>&nbsp;&nbsp;" + data.value;
+            if(data.count > 0) {
+                ret += "<span class=\"webix_badge\">" + data.count + "</span>";
+            }
+            return ret;
+        },
         data: [
-        {id: 1, value: "Venta", icon: "usd"},
-        {id: 2, value: "Pedidos a Domicilio", icon: "home"},
-        {id: 3, value: "Inventario", icon: "cubes"},
-        {id: 4, value: "Reportes", icon: "line-chart"},
-        {id: 5, value: "Usuarios", icon: "users"},
-        {id: 6, value: "Administracion", icon: "cog"},
+            {id: 1, value: "Venta", icon: "usd"},
+            {id: 2, value: "Pedidos a Domicilio", icon: "home"},
+            {id: 3, value: "Inventario", icon: "cubes"},
+            {id: 4, value: "Reportes", icon: "line-chart"},
+            {id: 5, value: "Usuarios", icon: "users"},
+            {id: 6, value: "Administracion", icon: "cog"},
         ],
         select: true,
         type: {
@@ -162,7 +231,7 @@ main_smenu = {
                     bodyContent = ventas_body;
                     break;
                     case "2":
-                    bodyContent = pedidos_body;
+                    bodyContent = orders_body;
                     break;
                     case "3":
                     bodyContent = inventory_body;
@@ -172,7 +241,7 @@ main_smenu = {
                 });
                 $$("main_body").reconstruct();
                 $$("main_title").define({
-                    label: trg.innerHTML
+                    label: "<span class='title_nobadge'>" + trg.innerHTML + "</span>"
                 });
                 $$("main_title").refresh();
                 setTimeout(function () {
@@ -200,7 +269,9 @@ main_header = {
     view: "toolbar",
     elements: [
     {
-        view: "icon", icon: "bars",
+        id: "main_menu_button",
+        view: "icon",
+        icon: "bars",
         click: function(){
             if( $$("main_smenu").config.hidden){
                 $$("main_smenu").show();
@@ -210,7 +281,7 @@ main_header = {
             }
         }
     },
-    {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta"},
+    {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta", width: 250},
     {},
     {view: "label", label: "LOCALITO"},
     {},
@@ -235,4 +306,6 @@ webix.ready(function(){
         rows: ventas_body
     });
     $$("main_body").reconstruct();
+
+    InitOrders();
 });

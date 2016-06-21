@@ -1,8 +1,50 @@
 // Orders
 
 var orders_body = [
-    {template: "Tiene los siguientes pedidos por realizar:"},
-    {template: "Lista de Pedidos"},
+    {
+        type: "space",
+        cols: [
+            {
+                id: "order_table",
+                view: "datatable",
+                select: true,
+                columns: [
+                    { id:"address", header:"Direccion", width:250},
+                    { id:"totalProducts", header:"Prods", width:80},
+                    { id:"totalPrice", header:"Valor", width:80, template: function (data) {
+                        return "$ " + aToPrice(data.totalPrice);
+                    }},
+                ],
+                data: [],
+                on: {
+                    onAfterRender: function () {
+                        setTimeout(function () {
+                            $$("order_table").parse(__shop_orders);
+                        }, 500);
+                    },
+                    onItemClick: function (boj) {
+                        $$("order_products_table").parse(this.getItem(this.getSelectedId()).products);
+                    }
+                }
+            },
+            {
+                id: "localizacionMap",
+                view: "google-map",
+                zoom: 10,
+                center: [24.527135, -102.65625]
+            }
+        ]
+    },
+    {
+        id: "order_products_table",
+        view: "datatable",
+        select: true,
+        columns: [
+            { id:"name", header:"Producto", width:400},
+            { id:"quantity", header:"Cantidad", width:100}
+        ],
+        data: []
+    }
 ];
 
 var __shop_orders = [];
@@ -290,7 +332,7 @@ main_header = {
     {},
     {view: "label", label: "<img style=\"float: left;\" src=\"logo.png\"><div>&nbsp;&nbsp;Localito</div>"},
     {},
-    {view: "button", type:"icon", icon: "user", maxWidth: 100, align: "right", label: "&nbsp;&nbsp;Mi Cuenta"}
+    {view: "button", type:"icon", icon: "user", width: 180, label: "&nbsp;&nbsp;Abarrotes San Juan"}
     ]
 };
 

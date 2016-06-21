@@ -12,6 +12,7 @@ function triggerOrder() {
     if (!__triggerOrder) {
         setTimeout(function () {
             order_received();
+            __triggerOrder = false;
         },1000);
         __triggerOrder = true;
     }
@@ -48,10 +49,10 @@ function order_received() {
         width: 400,
         callback: function(result){
             switch(result){
-            case 0: 
-                //statement
+            case "0": 
+                change_menu("2");
                 break;
-            case 1:
+            case "1":
                 //statement
                 break;
             }
@@ -65,7 +66,8 @@ function order_received() {
 inventory_body = [
     {
         id: "inventory_table",
-        view:"datatable", 
+        view:"datatable",
+        select: true,
         columns:[
             { id:"barcode", header:"Codigo de barras", width:150},
             { id:"name", header:"Nombre del producto", width:400},
@@ -187,6 +189,35 @@ ventas_body = [
 
 // MAIN Layout
 
+function change_menu(id) {
+    var bodyContent = [];
+    $$("main_menu_list").select(id);
+    var trg = $$("main_menu_list").getItemNode(id);
+    switch (id) {
+        case "1":
+        bodyContent = ventas_body;
+        break;
+        case "2":
+        bodyContent = orders_body;
+        break;
+        case "3":
+        bodyContent = inventory_body;
+    }
+    $$("main_body").define({
+        rows: bodyContent
+    });
+    $$("main_body").reconstruct();
+    $$("main_title").define({
+        label: "<span class='title_nobadge'>" + trg.innerHTML + "</span>"
+    });
+    $$("main_title").refresh();
+    setTimeout(function () {
+        if(! $$("main_smenu").config.hidden){
+            $$("main_smenu").hide();
+        }
+    },500);
+}
+
 main_smenu = {
     view: "sidemenu",
     id: "main_smenu",
@@ -224,34 +255,8 @@ main_smenu = {
             height: 50
         },
         on: {
-            "onItemClick":function(id, e, trg){ 
-                var bodyContent = [];
-                switch (id) {
-                    case "1":
-                    bodyContent = ventas_body;
-                    break;
-                    case "2":
-                    bodyContent = orders_body;
-                    break;
-                    case "3":
-                    bodyContent = inventory_body;
-                }
-                $$("main_body").define({
-                    rows: bodyContent
-                });
-                $$("main_body").reconstruct();
-                $$("main_title").define({
-                    label: "<span class='title_nobadge'>" + trg.innerHTML + "</span>"
-                });
-                $$("main_title").refresh();
-                setTimeout(function () {
-                    if( $$("main_smenu").config.hidden){
-                        $$("main_smenu").show();
-                    }
-                    else {
-                        $$("main_smenu").hide();
-                    }
-                },500);
+            "onItemClick":function(id, e, trg){
+                change_menu(id);
             }
         }
     }
@@ -283,7 +288,7 @@ main_header = {
     },
     {id: "main_title", view: "label", label: "<span class='webix_icon fa-usd'></span>&nbsp;Venta", width: 250},
     {},
-    {view: "label", label: "LOCALITO"},
+    {view: "label", label: "<img style=\"float: left;\" src=\"logo.png\"><div>&nbsp;&nbsp;Localito</div>"},
     {},
     {view: "button", type:"icon", icon: "user", maxWidth: 100, align: "right", label: "&nbsp;&nbsp;Mi Cuenta"}
     ]
@@ -306,6 +311,7 @@ webix.ready(function(){
         rows: ventas_body
     });
     $$("main_body").reconstruct();
+    $$("main_menu_list").select(1);
 
     InitOrders();
 });
